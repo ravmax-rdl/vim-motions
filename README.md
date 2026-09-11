@@ -1,87 +1,55 @@
-# Welcome to React Router!
+# Motions
 
-A modern, production-ready template for building full-stack React applications using React Router.
+A searchable Vim reference with a practice pad that runs real Vim keybindings.
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/remix-run/react-router-templates/tree/main/default)
+- **283 commands** you can search in plain English — "delete a word", "save and quit",
+  "go to line 42". Questions Vim has no single command for (commenting, multiple cursors,
+  surround) get a written answer instead of the closest-looking keys.
+- **A practice pad** built on [CodeMirror](https://codemirror.net/) and
+  [codemirror-vim](https://github.com/replit/codemirror-vim): visual and blockwise modes,
+  registers, macros, marks, text objects, `.` repeat, search and ex commands.
 
-## Features
+The editor is about 130 KB gzipped and is fetched only when someone opens the pad, so the
+page itself stays light.
 
-- 🚀 Server-side rendering
-- ⚡️ Hot Module Replacement (HMR)
-- 📦 Asset bundling and optimization
-- 🔄 Data loading and mutations
-- 🔒 TypeScript by default
-- 🎉 TailwindCSS for styling
-- 📖 [React Router docs](https://reactrouter.com/)
+## Develop
 
-## Getting Started
-
-### Installation
-
-Install the dependencies:
+The project uses [Bun](https://bun.sh). `bun.lock` is the committed lockfile.
 
 ```bash
-npm install
+bun install
+bun run dev        # http://localhost:5173
+bun run test       # vitest
+bun run typecheck
+bun run build
 ```
 
-### Development
+## Testing the emulator
 
-Start the development server with HMR:
+Accuracy is the point of the pad, so the Vim behaviour is pinned by a conformance table in
+`app/lib/vim-pad.cases.ts`. Each row is a document, a key sequence, and the resulting text
+and cursor position, checked against Vim 9 by hand.
 
-```bash
-npm run dev
-```
+`bun run test` runs the table in jsdom. Cases flagged `needsLayout` are skipped there:
+CodeMirror resolves `j`/`k` and blockwise selections through real pixel measurement, which
+jsdom cannot produce. To run the full table, including those, start the dev server and open
+`/__conformance` — a dev-only route that also checks every drill is solvable by its own hint.
 
-Your application will be available at `http://localhost:5173`.
+### Known deviation
 
-## Building for Production
+A linewise delete that reaches the last line (`dG`, `2dd`, `:2,3d`) leaves a trailing blank
+line where Vim removes it. At the point the change is dispatched it is indistinguishable
+from a charwise `0d$` on the final line, which legitimately leaves that blank, so the pad
+has no signal to correct only the first case. It is recorded in the conformance table via
+`knownDeviation` and reported separately rather than dropped.
 
-Create a production build:
-
-```bash
-npm run build
-```
-
-## Deployment
-
-### Docker Deployment
-
-To build and run using Docker:
-
-```bash
-docker build -t my-app .
-
-# Run the container
-docker run -p 3000:3000 my-app
-```
-
-The containerized application can be deployed to any platform that supports Docker, including:
-
-- AWS ECS
-- Google Cloud Run
-- Azure Container Apps
-- Digital Ocean App Platform
-- Fly.io
-- Railway
-
-### DIY Deployment
-
-If you're familiar with deploying Node applications, the built-in app server is production-ready.
-
-Make sure to deploy the output of `npm run build`
+## Layout
 
 ```
-├── package.json
-├── package-lock.json (or pnpm-lock.yaml, or bun.lockb)
-├── build/
-│   ├── client/    # Static assets
-│   └── server/    # Server-side code
+app/
+  components/   UI
+  data/         catalog.ts (the commands), answers.ts (the "Vim can't do that" entries)
+  lib/          vim-pad.ts (editor wrapper), search.ts (ranking), drills.ts
+  routes/       home.tsx, conformance.tsx (dev only)
+test/setup-cm.ts  jsdom layout stub for CodeMirror
 ```
-
-## Styling
-
-This template comes with [Tailwind CSS](https://tailwindcss.com/) already configured for a simple default starting experience. You can use whatever CSS framework you prefer.
-
----
-
-Built with ❤️ using React Router.

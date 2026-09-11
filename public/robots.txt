@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /__conformance
+
+Sitemap: https://vim.ravmax.xyz/sitemap.xml

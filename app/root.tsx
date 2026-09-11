@@ -9,19 +9,11 @@ import {
 import { Analytics } from "@vercel/analytics/react";
 
 import type { Route } from "./+types/root";
+import { MotionRoot } from "~/components/motion-root";
 import "./app.css";
 
 export const links: Route.LinksFunction = () => [
-  { rel: "preconnect", href: "https://fonts.googleapis.com" },
-  {
-    rel: "preconnect",
-    href: "https://fonts.gstatic.com",
-    crossOrigin: "anonymous",
-  },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
-  },
+  { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -30,14 +22,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="theme-color" content="#0c0c0c" />
         <Meta />
         <Links />
       </head>
       <body>
-        {children}
-        <ScrollRestoration />
-        <Scripts />
-        <Analytics />
+        <MotionRoot>
+          {children}
+          <ScrollRestoration />
+          <Scripts />
+          <Analytics />
+        </MotionRoot>
       </body>
     </html>
   );
@@ -48,7 +43,7 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
+  let message = "Something broke";
   let details = "An unexpected error occurred.";
   let stack: string | undefined;
 
@@ -56,7 +51,7 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     message = error.status === 404 ? "404" : "Error";
     details =
       error.status === 404
-        ? "The requested page could not be found."
+        ? "That page is not in this buffer."
         : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
@@ -64,11 +59,17 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   }
 
   return (
-    <main className="pt-16 p-4 container mx-auto">
-      <h1>{message}</h1>
-      <p>{details}</p>
+    <main className="mx-auto max-w-[1120px] px-4 py-16">
+      <p className="font-mono text-sm text-accent">{message}</p>
+      <h1 className="mt-3 text-3xl font-semibold tracking-tight">{details}</h1>
+      <a
+        href="/"
+        className="mt-8 inline-flex h-10 items-center rounded-[var(--radius-box)] border border-line bg-chip px-4 font-mono text-sm text-ink hover:bg-chip-hover"
+      >
+        [ Back to motions ]
+      </a>
       {stack && (
-        <pre className="w-full p-4 overflow-x-auto">
+        <pre className="mt-8 overflow-x-auto rounded-[var(--radius-box)] border border-line bg-chip p-4 text-xs text-muted">
           <code>{stack}</code>
         </pre>
       )}

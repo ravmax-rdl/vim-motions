@@ -5,7 +5,7 @@ import { SiteHeader } from "~/components/site-header";
 import { commandCount } from "~/data/catalog";
 
 const SITE_URL = "https://motions.vercel.app";
-const TITLE = "Motions: the Vim command reference";
+const TITLE = "Motions";
 const DESCRIPTION = `Search ${commandCount} Vim motions, operators and ex commands in plain English, and practise them in a pad that runs real Vim keybindings.`;
 
 export function meta({}: Route.MetaArgs) {

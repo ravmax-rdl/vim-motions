@@ -3,7 +3,6 @@ import { BlinkCursor } from "~/components/ascii";
 
 const nav = [
   { to: "/practice", label: "Practice", nav: true },
-  { to: "/#directory", label: "Index", nav: false },
 ];
 
 export function SiteHeader() {
@@ -11,7 +10,6 @@ export function SiteHeader() {
     <header className="sticky top-0 z-20 border-b border-line bg-canvas/95 backdrop-blur-sm">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-6 px-4 md:h-16 md:px-6">
         <Link to="/" className="group flex items-center text-ink">
-          <span aria-hidden="true" className="mr-2.5 block h-4 w-2.5 bg-accent" />
           <span className="font-display text-[17px] tracking-[0.04em]">MOTIONS</span>
           <BlinkCursor />
         </Link>

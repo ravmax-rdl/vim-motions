@@ -18,7 +18,7 @@ export function BlinkCursor({ className = "" }: { className?: string }) {
   return (
     <span
       aria-hidden="true"
-      className={`ascii-cursor ml-1 inline-block h-[0.8em] w-[0.45em] translate-y-[0.08em] bg-accent ${className}`}
+      className={`ascii-cursor ml-1 inline-block h-[1.0em] w-[0.45em] bg-accent ${className}`}
     />
   );
 }

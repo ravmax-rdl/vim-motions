@@ -121,16 +121,16 @@ export function MotionsPage() {
                 </Link>
               </m.div>
 
-              <div className="mt-8 grid items-end gap-6 md:grid-cols-2 md:gap-10">
+              <div className="grid items-end gap-6 md:grid-cols-2 md:gap-10">
                 <m.h1
                   variants={fadeUp}
                   className="font-display text-[clamp(2.75rem,8vw,5.5rem)] leading-[1.05] text-balance text-ink"
                 >
-                  Every Vim command.
+                  Just use vim.
                 </m.h1>
                 <m.div variants={fadeUp} className="flex max-w-md flex-col gap-6">
                   <p className="text-pretty text-lg leading-relaxed text-muted">
-                    Search {commandCount} motions, operators and ex commands in plain English. The
+                    Search {commandCount} motions, operators and commands in plain English. The
                     pad runs real Vim keybindings, so what you practise is what you get.
                   </p>
                   <div className="flex flex-wrap gap-3">

@@ -52,9 +52,9 @@ export const DRILLS: Drill[] = [
   {
     id: "delete-word",
     prompt: "Delete the word under the cursor",
-    hint: "diw",
+    hint: "dw",
     doc: PROSE,
-    done: (now, start) => lines(now)[0] === lines(start)[0].replace(/^the/, ""),
+    done: (now) => /^ ?quick brown fox$/.test(lines(now)[0]),
   },
   {
     id: "change-word",

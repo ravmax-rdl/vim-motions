@@ -40,4 +40,12 @@ describe("drills", () => {
       expect(drill.done(p.state(), start)).toBe(true);
     });
   }
+
+  test.each(["dw", "diw", "de"])("delete-word accepts %s", (keys) => {
+    const drill = DRILLS.find((d) => d.id === "delete-word")!;
+    const p = padFor(drill.doc);
+    const start = p.state();
+    p.sendKeys(keys);
+    expect(drill.done(p.state(), start)).toBe(true);
+  });
 });

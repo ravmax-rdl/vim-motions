@@ -159,7 +159,14 @@ export function createVimPad({ parent, doc, onChange }: VimPadOptions): VimPad {
   function cursor() {
     const head = view.state.selection.main.head;
     const line = view.state.doc.lineAt(head);
-    return { line: line.number - 1, ch: head - line.from };
+    let ch = head - line.from;
+    // Vim's normal-mode cursor sits on a character, never past the last one.
+    // Real `$` / End can leave CodeMirror's head at `line.to`.
+    const current = mode();
+    if (current !== "insert" && current !== "replace" && line.length > 0 && ch >= line.length) {
+      ch = line.length - 1;
+    }
+    return { line: line.number - 1, ch };
   }
 
   function text() {
@@ -257,9 +264,12 @@ export function createVimPad({ parent, doc, onChange }: VimPadOptions): VimPad {
 
   // Real typing goes through CodeMirror's own keymap, so mirror those keys into
   // the trail and re-read the mode once the editor has handled them.
+  // vimKeyFromEvent returns undefined for lone modifiers (Shift, Control, …);
+  // do not fall back to event.key or those leak into the trail as "Shift".
   function onKeyDown(event: KeyboardEvent) {
-    const key = Vim.vimKeyFromEvent(event) ?? event.key;
-    if (key) record(key);
+    const key = Vim.vimKeyFromEvent(event);
+    if (!key) return;
+    record(key);
     queueMicrotask(emit);
   }
 

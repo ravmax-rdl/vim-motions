@@ -13,6 +13,17 @@ function open(doc: string, keys: string) {
   return pad;
 }
 
+function mount(doc: string) {
+  const parent = document.createElement("div");
+  document.body.appendChild(parent);
+  pad = createVimPad({ parent, doc });
+  return parent.querySelector(".cm-content")!;
+}
+
+function press(el: Element, init: KeyboardEventInit) {
+  el.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, cancelable: true, ...init }));
+}
+
 afterEach(() => {
   pad?.destroy();
   pad = null;
@@ -122,13 +133,36 @@ describe("pad api", () => {
   });
 
   test("real keydown events drive the editor, not just sendKeys", () => {
-    const parent = document.createElement("div");
-    document.body.appendChild(parent);
-    pad = createVimPad({ parent, doc: "alpha beta" });
-    const content = parent.querySelector(".cm-content")!;
-    for (const key of ["d", "w"]) {
-      content.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true }));
-    }
-    expect(pad.text()).toBe("beta");
+    const content = mount("alpha beta");
+    press(content, { key: "d" });
+    press(content, { key: "w" });
+    expect(pad!.text()).toBe("beta");
+    expect(pad!.keys()).toEqual(["d", "w"]);
+  });
+
+  test("does not record lone Shift, Control, or Alt", () => {
+    const content = mount("abc");
+    press(content, { key: "Shift", shiftKey: true });
+    press(content, { key: "G", shiftKey: true });
+    expect(pad!.keys()).toEqual(["G"]);
+    press(content, { key: "Control", ctrlKey: true });
+    press(content, { key: "Alt", altKey: true });
+    expect(pad!.keys()).toEqual(["G"]);
+  });
+
+  test("records $ without a leading Shift", () => {
+    const content = mount("the quick brown fox");
+    press(content, { key: "Shift", shiftKey: true });
+    press(content, { key: "$", shiftKey: true });
+    expect(pad!.keys()).toEqual(["$"]);
+    expect(pad!.cursor().ch).toBe("the quick brown fox".length - 1);
+  });
+
+  test("records Escape as <Esc>", () => {
+    const content = mount("abc");
+    press(content, { key: "i" });
+    press(content, { key: "Escape" });
+    expect(pad!.mode()).toBe("normal");
+    expect(pad!.keys()).toEqual(["i", "<Esc>"]);
   });
 });
